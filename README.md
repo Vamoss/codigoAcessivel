@@ -14,5 +14,4 @@ O código deste repositório está em JavaScript Vanilla, não é necessário co
 
 ## Pendências
 
-- Tratar erros
 - Quebrar linhas

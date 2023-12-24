@@ -38,4 +38,5 @@ Editor
 
 #execucaoIframe{
   display: none;
+  width: 100%;
 }
