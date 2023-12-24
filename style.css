@@ -1,0 +1,41 @@
+h1 {
+  font-weight: bold;
+  font-size: 18pt;
+}
+
+p {
+  margin-bottom: 5px;
+}
+
+/*
+Editor
+*/
+#editorDiv {
+  width:   100%;
+  padding: 10px;  
+  position: relative;
+}
+
+#editorDiv .linha{
+  width: 100%;
+}
+
+#editorDiv .botaoLinha{
+  min-width: 100%;
+  text-align: left;
+  border: 0px;
+  background-color: transparent;
+}
+
+#editorDiv .botaoLinha:hover{
+  background-color: snow;
+}
+
+#editorDiv .palavra{
+  display: inline-block;
+  white-space: pre;
+}
+
+#execucaoIframe{
+  display: none;
+}
