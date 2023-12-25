@@ -2,11 +2,13 @@
 
 Este é um protótipo de editor de texto compatível com leitores de telas.
 
+Demonstração em: https://vamoss.github.io/codigoAcessivel/
+
 O objetivo é proporcionar uma primeira experiência de programação para pessoas cegas utilizando o celular, facilitando a navegação e edição do código.
 
 Identificamos que os editores de texto em celulares não permitem uma experiência de navegação e edição do código que se localizar com facilitade.
 
-Por isso a estratégia deste projeto foi segmentar o código em linhas, e cada estrutura do código da linha em bloco editáveis individualmente.
+Por isso a estratégia deste projeto foi segmentar o código em linhas, e cada estrutura do código da linha em bloco editáveis individualmente. Pelo menu de Configuração é possível alterar esse comportamento para editar a linha inteira em um único bloco de comando.
 
 ## Como rodar o projeto
 

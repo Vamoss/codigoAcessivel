@@ -86,6 +86,10 @@ var blocoSelecionadoDiv;//div editável selecionada na linha atual
 var cursorIndex;//index do cursor na caixa de texto editável selecionada
 var cursorMaxIndex;//máximo de caracteres da caixa de texto editável selecionada
 
+//configurações
+var modoEdicaoField;//Selection box que determina o modo de edição do código, por blocos ou por linhas
+var exibirLinhaField;//Selection box que determina se deve exibir ou não a numeração das linhas
+var modalConfiguracoes;//objeto bootstrap.Modal, controla a janela de configurações
 window.addEventListener("DOMContentLoaded", function(){
 	if(document.contentEditable != undefined) {
 		alert("Seu navegador não suporta edição de texto HTML5");
@@ -104,6 +108,21 @@ function inicializa()
 	document.getElementById("botaoEditor").addEventListener("click", mostraEditor);
 	document.getElementById("botaoExecutar").addEventListener("click", executarCodigo);
 
+	//inicializa configurações
+	modoEdicaoField = document.getElementById("modoEdicao");
+	exibirLinhaField = document.getElementById("exibirLinha");
+	const configModal = document.getElementById('configModal');
+	configModal.addEventListener('hidden.bs.modal', carregaConfiguracao);
+	modalConfiguracoes = new bootstrap.Modal(configModal);
+	document.getElementById('botaoSalvarConfiguracao').addEventListener("click", () =>{
+		salvaConfiguracao();
+		converteCodigoParaEditor(codigoAtual());
+		modalConfiguracoes.hide();
+		document.getElementById("botaoConfigurar").focus();
+	});
+	carregaConfiguracao();
+	
+
 	//inicializa o monitoramento de teclas apertadas
 	document.addEventListener('keydown', onKeyDown);
 
@@ -121,7 +140,7 @@ function inicializa()
 	xhr.send();
 }
 
-//Função acionada pela interface que apresenta o editor de conteúdo
+//Função que apresenta o editor de conteúdo
 function mostraEditor(event)
 {
 	editorDiv.style.display = "block";
@@ -129,7 +148,7 @@ function mostraEditor(event)
 	execucaoIframe.contentWindow.location = "about:blank";
 }
 
-//Função acionada pela interface que executa a última versão editada do código
+//Função que executa a última versão editada do código
 function executarCodigo(event)
 {
 	editorDiv.style.display = "none";
@@ -143,17 +162,29 @@ function executarCodigo(event)
 }
 
 //Função que converte uma string no editor de código
-function converteCodigoParaEditor(code){
-	//parse code
+function converteCodigoParaEditor(codigo){
 	var codigoHTML = "";
-	var linhas = code.split("\n");
-	linhas.forEach((linha, counter) => {
+	var linhas = codigo.split("\n");
+	linhas.forEach((linha, contador) => {
+		linha = linha.replace("\r", "");//remove um caracter extra de quebra de linhas no windows
 		codigoHTML += `<div class="linha">`;
-			codigoHTML += `<button class="botaoLinha" onclick="expandirLinha(this)" onfocus="botaoLinhaFocado(this)" aria-rotulo="Linha ${counter+1}. ${converteCodigoEmAria(linha)}" data-contador="${counter+1}" data-codigo="${encodeURI(linha)}">Linha ${counter+1}. ${linha}</button>`
+			codigoHTML += `<button class="botaoLinha" onclick="expandirLinha(this)" onfocus="botaoLinhaFocado(this)" aria-label="${criaCodigoAudivel(true, contador+1, linha)}" data-contador="${contador+1}" data-codigo="${encodeURI(linha)}">${criaCodigoAudivel(false, contador+1, linha)}</button>`
 			codigoHTML += `<div hidden></div>`;
 		codigoHTML += `</div>\n`;
 	})
 	editorDiv.innerHTML = codigoHTML;
+}
+
+//Função que cria o código audível de acorod com as configurações
+function criaCodigoAudivel(ariaMode, contador, codigo){
+	var resultado = codigo;
+	if(ariaMode){
+		resultado = converteCodigoEmAria(resultado);
+	}
+	if(exibirLinhaField.value == "sim"){
+		resultado = "Linha " + contador + ". " + resultado;
+	}
+	return resultado;
 }
 
 //Função que divide uma string em uma array separada por uma lista de caracteres
@@ -211,12 +242,14 @@ function converteCodigoEmAria(str){
 //Função que converte a última versão do código para uma string
 function codigoAtual(){
 	atualizaERecolheLinhaSelecionada();
-	var buttons = Array.from(document.querySelectorAll('.botaoLinha'));
-	var code = "";
-	buttons.forEach(button => {
-		code += decodeURI(button.getAttribute("data-codigo")) + "\n";
+	var botoes = Array.from(document.querySelectorAll('.botaoLinha'));
+	var codigo = "";
+	botoes.forEach((botao, index) => {
+		codigo += decodeURI(botao.getAttribute("data-codigo"));
+		if(index < botoes.length-1)
+			codigo += "\n";
 	})
-	return code;
+	return codigo;
 }
 
 //Função que recolhe a linha editada e atualiza o botão com a última versão do código
@@ -231,9 +264,9 @@ function atualizaERecolheLinhaSelecionada(){
 		}
 		var botao = linhaSelecionadaDiv.previousSibling;
 		var contador = botao.getAttribute("data-contador");
-		botao.setAttribute("aria-label", `Linha ${contador}. ${converteCodigoEmAria(codigo)}`);
+		botao.setAttribute("aria-label", criaCodigoAudivel(true, contador, codigo));
 		botao.setAttribute("data-codigo", encodeURI(codigo));
-		botao.textContent = `Linha ${contador}. ${codigo}`;
+		botao.textContent = criaCodigoAudivel(false, contador, codigo);
 	}
 	linhaSelecionadaDiv = null;
 }
@@ -243,14 +276,20 @@ function expandirLinha(botao){
 	atualizaERecolheLinhaSelecionada();
 	botao.nextSibling.hidden = false;
 	linhaSelecionadaDiv = botao.nextSibling;
-	var code = decodeURI(botao.getAttribute("data-codigo"));
-	var words = divideStringPorCaracteres(code, separators.map(s => s.char));
-	var computedCode = "";
-	words.forEach(palavra => {
-		var editavel = ignorarEdicao.includes(palavra) ? "" : `contenteditable="true"`;
-		computedCode += `<div ${editavel} spellcheck="false" class="palavra">${palavra}</div>`;
-	})
-	linhaSelecionadaDiv.innerHTML = computedCode;
+	var codigo = decodeURI(botao.getAttribute("data-codigo"));
+	var estruturaHTML = "";
+	if(modoEdicaoField.value == "bloco"){
+		//quebra o código em vários blocos editáveis individualmente
+		var blocos = divideStringPorCaracteres(codigo, separators.map(s => s.char));
+		blocos.forEach(bloco => {
+			var editavel = ignorarEdicao.includes(bloco) ? "" : `contenteditable="true"`;
+			estruturaHTML += `<div ${editavel} spellcheck="false" class="palavra">${bloco}</div>`;
+		})
+	}else{
+		//mantém um único bloco editável para toda a linha
+		estruturaHTML +=  `<div contenteditable="true" spellcheck="false" class="palavra">${codigo}</div>`;
+	}
+	linhaSelecionadaDiv.innerHTML = estruturaHTML;
 	linhaSelecionadaDiv.firstChild.focus();
 }
 
@@ -290,7 +329,7 @@ function onKeyDown(e) {
 	}
 	else if (e.keyCode == '39') {
 		// seta para direita
-		procuraProximoBloco();
+		procuraBlocoADireita();
 	}
 }
 
@@ -299,7 +338,7 @@ function onKeyDown(e) {
 function procuraBlocoADireita(){
 	if(blocoSelecionadoDiv){
 		if(cursorIndex == cursorMaxIndex){
-			if(blocoSelecionadoDiv.nextSibling)
+			if(blocoSelecionadoDiv.nextSibling)							
 				blocoSelecionadoDiv.nextSibling.focus();
 			else {
 				blocoSelecionadoDiv.parentNode.nextSibling.nextSibling.firstChild.focus();
@@ -324,7 +363,6 @@ function procuraBlocoAEsquerda(){
 			}
 			var range = document.createRange()
 			var sel = window.getSelection()
-			console.log(blocoSelecionadoDiv);
 			range.setStart(blocoSelecionadoDiv.firstChild, blocoSelecionadoDiv.firstChild.length)
 			range.collapse(true)
 			
@@ -332,4 +370,23 @@ function procuraBlocoAEsquerda(){
 			sel.addRange(range)
 		}
 	}
+}
+
+//Função que carrega a configuração
+function carregaConfiguracao() {
+	if(localStorage.getItem("modoEdicao") === null){
+		//ainda não há configuração salva
+		//configura valores padrões
+		modoEdicaoField.value = "bloco";
+		exibirLinhaField.value = "sim";
+	}else{
+		modoEdicaoField.value = localStorage.getItem("modoEdicao");
+		exibirLinhaField.value = localStorage.getItem("exibirLinha");
+	}
+}
+
+//Função que salva a configuração
+function salvaConfiguracao() {
+	localStorage.setItem("modoEdicao", modoEdicaoField.value);
+	localStorage.setItem("exibirLinha", exibirLinhaField.value);
 }

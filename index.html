@@ -14,20 +14,63 @@
     <script src="script.js"></script>
   </head>
   <body>
+    <!-- descrição do projeto -->
     <div>
       <h1>Protótipo de editor de texto compatível com leitores de telas</h1>
       <p>O objetivo é proporcionar uma primeira experiência de programação para pessoas cegas utilizando o celular.</p>
-      <p>Abaixo você vai encontrar dois botões, um para editar o código e outro para executar o código.</p>
-      <p>No editor de código, cada linha é ativada por um botão. Após ativar a linha, você poderá editar cada bloco da linha separadamente.</p>
-      <p>Nesta fase do protótipo, é interessante saber se quebrar a linha em blocos ajuda ou dificulta a experiência de edição do código.</p>
+      <p>Abaixo você vai encontrar três botões: editar o código, executar o código e configurações de navegação e edição.</p>
+      <p>Em seguida você encontrará o código navegável por linha. É necessário ativar a linha para poder editá-la.</p>
       <p>Como limitação conhecida, o editor ainda não permite quebra de linhas.</p>
     </div>
+
+    <!-- menu de navegação -->
     <nav id="editorMenu">
       <button aria-label="Editar código" tabindex="0" id="botaoEditor" class="btn btn-light bi-code-slash"></button>
       <button aria-label="Executar código" tabindex="0" id="botaoExecutar" class="btn btn-light bi-play-circle-fill"></button>
+      <button aria-label="Configurações" tabindex="0" id="botaoConfigurar" class="btn btn-light bi-gear-fill" data-bs-toggle="modal" data-bs-target="#configModal"></button>
     </nav>
+
+    <!-- container onde ficará o código editável -->
     <div id="editorDiv"></div>
+
+    <!-- iframe onde o código editado será executado -->
     <iframe id="execucaoIframe" src="about:blank"></iframe>
+    
+    <!-- Modal de configurações -->
+    <div class="modal fade" id="configModal" tabindex="-1" aria-labelledby="configModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="configModalLabel">Configurações</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar configurações"></button>
+          </div>
+          <div class="modal-body">
+
+            <fieldset>
+              <label for="modoEdicao">Modo de edição:</label>
+              <select id="modoEdicao" class="form-select" aria-label="Modo de edição:">
+                <option value="bloco" selected>Editar código por blocos (Cada estrutura do código é editável separadamente)</option>
+                <option value="linha">Editar código por linha inteira (A linha é editável de forma única)</option>
+              </select>
+            </fieldset>
+
+            <fieldset>
+              <label for="exibirLinha">Escrever numeração das linhas:</label>
+              <select id="exibirLinha" class="form-select" aria-label="Escrever numeração das linhas:">
+                <option value="sim" selected>Sim, exibir numeração das linhas.</option>
+                <option value="nao">Não, esconder numeração das linhas.</option>
+              </select>
+            </fieldset>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="botaoSalvarConfiguracao">Salvar Configurações</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- script do bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>
 </html>
