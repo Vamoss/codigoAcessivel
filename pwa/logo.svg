@@ -1,16 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-<svg width="800px" height="800px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-<style>.cls-1{fill:none;}.cls-2{clip-path:url(#clip-path);}</style>
-<clipPath id="clip-path">
-<rect class="cls-1" y="-0.02" width="24" height="24"/>
-</clipPath>
-</defs>
-<title>mobile-code</title>
-<g class="cls-2">
-<path d="M10.21,13.31a.79.79,0,0,1-.53-.22l-1.4-1.4a.75.75,0,0,1,0-1.06L9.79,9.12a.75.75,0,0,1,1.06,0,.74.74,0,0,1,0,1.06l-1,1,.87.86a.77.77,0,0,1,0,1.07A.79.79,0,0,1,10.21,13.31Z"/>
-<path d="M13.79,13.31a.79.79,0,0,1-.53-.22.77.77,0,0,1,0-1.07l.87-.86-1-1a.74.74,0,0,1,0-1.06.75.75,0,0,1,1.06,0l1.51,1.51a.75.75,0,0,1,0,1.06l-1.4,1.4A.79.79,0,0,1,13.79,13.31Z"/>
-<path d="M15,22.75H9A3.75,3.75,0,0,1,5.25,19V5A3.75,3.75,0,0,1,9,1.25h6A3.75,3.75,0,0,1,18.75,5V19A3.75,3.75,0,0,1,15,22.75Zm-6-20A2.25,2.25,0,0,0,6.75,5V19A2.25,2.25,0,0,0,9,21.25h6A2.25,2.25,0,0,0,17.25,19V5A2.25,2.25,0,0,0,15,2.75Z"/>
-<path d="M12,19.75a.75.75,0,0,1-.53-1.28A.75.75,0,1,1,12,19.75Z"/>
-</g>
-</svg>

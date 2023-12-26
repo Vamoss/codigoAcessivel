@@ -82,14 +82,12 @@ var ignorarEdicao = [' '];//lista caracteres do código que devem ser ignorados 
 var execucaoIframe;//iframe da execução
 var editorDiv;//div do editor que contém todas as linhas
 var linhaSelecionadaDiv;//div que contém todas as caixas editáveis da linha
-var blocoSelecionadoDiv;//div editável selecionada na linha atual
-var cursorIndex;//index do cursor na caixa de texto editável selecionada
-var cursorMaxIndex;//máximo de caracteres da caixa de texto editável selecionada
 
 //configurações
 var modoEdicaoField;//Selection box que determina o modo de edição do código, por blocos ou por linhas
 var exibirLinhaField;//Selection box que determina se deve exibir ou não a numeração das linhas
 var modalConfiguracoes;//objeto bootstrap.Modal, controla a janela de configurações
+
 window.addEventListener("DOMContentLoaded", function(){
 	if(document.contentEditable != undefined) {
 		alert("Seu navegador não suporta edição de texto HTML5");
@@ -121,10 +119,6 @@ function inicializa()
 		document.getElementById("botaoConfigurar").focus();
 	});
 	carregaConfiguracao();
-	
-
-	//inicializa o monitoramento de teclas apertadas
-	document.addEventListener('keydown', onKeyDown);
 
 	//carrega o arquivo inicial
 	var xhr = new XMLHttpRequest();
@@ -134,6 +128,7 @@ function inicializa()
 			const status = xhr.status;
 			if (status === 0 || (status >= 200 && status < 400)) {
 				converteCodigoParaEditor(xhr.responseText);
+				document.getElementsByTagName("h1")[0].focus();
 			}
 		}
 	}
@@ -300,80 +295,6 @@ function botaoLinhaFocado(botao){
 	atualizaERecolheLinhaSelecionada();
 }
 
-//Função que monitora a mudança de posição do cursor
-document.addEventListener("selectionchange", () => {
-	var selection = window.getSelection();
-	var el = selection.focusNode;
-
-	//se o cursor estiver no texto
-	//armazenamos o a posição do cursor e o máximo de caracteres
-	if(el.nodeType !== Node.ELEMENT_TEXT){
-		if(selection.type == "Caret"){
-			cursorIndex = selection.anchorOffset;
-			cursorMaxIndex = selection.focusNode.length;
-		}
-	}
-
-	//as vezes o texto é selecionado, e aí é preciso pegar o elemento pai
-	if(el.nodeType !== Node.ELEMENT_NODE){
-		el = el.parentNode;
-	}
-	
-	blocoSelecionadoDiv = el;
-});
-
-//Função que monitora as teclas apertadas
-//Apenas no PC, as teclas direcionais navegam entre as caixas de texto
-function onKeyDown(e) {
-	if (e.keyCode == '37') {
-	   // seta para esquerda
-	   procuraBlocoAEsquerda();
-	}
-	else if (e.keyCode == '39') {
-		// seta para direita
-		procuraBlocoADireita();
-	}
-}
-
-//Função que verifica se o cursor está no final da caixa editável e procura a caixa posterior
-//se estiver na última caixa da linha, será selecionado a primeira caixa de edição da próxima linha
-function procuraBlocoADireita(){
-	if(blocoSelecionadoDiv){
-		if(cursorIndex == cursorMaxIndex){
-			if(blocoSelecionadoDiv.nextSibling)							
-				blocoSelecionadoDiv.nextSibling.focus();
-			else {
-				blocoSelecionadoDiv.parentNode.nextSibling.nextSibling.firstChild.focus();
-			}
-		}
-	}
-}
-
-//Função que verifica se o cursor está no começo da caixa editável e procura a caixa anterior
-//se estiver na primeira caixa da linha, será selecionado a última caixa de edição da linha anterior
-function procuraBlocoAEsquerda(){
-	if(blocoSelecionadoDiv){
-		if(cursorIndex == 0){
-			if(blocoSelecionadoDiv.previousSibling) {
-				blocoSelecionadoDiv = blocoSelecionadoDiv.previousSibling;
-			} else {
-				blocoSelecionadoDiv = blocoSelecionadoDiv.parentNode.previousSibling;
-				if(blocoSelecionadoDiv.nodeType !== Node.ELEMENT_TEXT){
-					blocoSelecionadoDiv = blocoSelecionadoDiv.previousSibling;
-				}
-				blocoSelecionadoDiv = blocoSelecionadoDiv.lastChild;
-			}
-			var range = document.createRange()
-			var sel = window.getSelection()
-			range.setStart(blocoSelecionadoDiv.firstChild, blocoSelecionadoDiv.firstChild.length)
-			range.collapse(true)
-			
-			sel.removeAllRanges()
-			sel.addRange(range)
-		}
-	}
-}
-
 //Função que carrega a configuração
 function carregaConfiguracao() {
 	if(localStorage.getItem("modoEdicao") === null){
@@ -392,17 +313,3 @@ function salvaConfiguracao() {
 	localStorage.setItem("modoEdicao", modoEdicaoField.value);
 	localStorage.setItem("exibirLinha", exibirLinhaField.value);
 }
-
-
-//*
-//Inicializa o Service Worker para tornar o site um PWA (Aplicação para celular)
-if ("serviceWorker" in navigator) {
-	navigator.serviceWorker
-		.register("service-worker.js", {
-			scope: "./"
-		})
-		.then(function(reg) {
-			console.log("O Service Worker foi registrado para o escopo: " + reg.scope);
-		});
-}
-/**/

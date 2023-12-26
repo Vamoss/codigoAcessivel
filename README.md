@@ -1,3 +1,7 @@
+Neste branch exposicao-arte-de-codigo-aberto encontra-se uma versão simplificada do projeto.
+
+Criada especificamente para ser exibida na Exposição Arte de Código Aberto.
+
 # Código Acessível
 
 Este é um protótipo de editor de texto compatível com leitores de telas.
