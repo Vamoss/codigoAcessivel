@@ -1,3 +1,7 @@
+body {
+  padding: 15px;
+}
+
 h1 {
   font-weight: bold;
   font-size: 18pt;
@@ -12,8 +16,8 @@ Editor
 */
 #editorDiv {
   width:   100%;
-  padding: 10px;  
   position: relative;
+  margin-top: 5px;
 }
 
 #editorDiv .linha{
@@ -24,11 +28,14 @@ Editor
   min-width: 100%;
   text-align: left;
   border: 0px;
+  padding: 0px;
   background-color: transparent;
 }
 
-#editorDiv .botaoLinha:hover{
-  background-color: snow;
+#editorDiv .botaoLinha:hover,
+#editorDiv .botaoLinha:focus,
+#editorDiv .botaoLinha.expandido{
+  background-color: #c6c7c8;
 }
 
 #editorDiv .palavra{

@@ -264,6 +264,7 @@ function atualizaERecolheLinhaSelecionada(){
 		}
 		var botao = linhaSelecionadaDiv.previousSibling;
 		var contador = botao.getAttribute("data-contador");
+		botao.classList.remove("expandido");
 		botao.setAttribute("aria-label", criaCodigoAudivel(true, contador, codigo));
 		botao.setAttribute("data-codigo", encodeURI(codigo));
 		botao.textContent = criaCodigoAudivel(false, contador, codigo);
@@ -275,6 +276,7 @@ function atualizaERecolheLinhaSelecionada(){
 function expandirLinha(botao){
 	atualizaERecolheLinhaSelecionada();
 	botao.nextSibling.hidden = false;
+	botao.classList.add("expandido");
 	linhaSelecionadaDiv = botao.nextSibling;
 	var codigo = decodeURI(botao.getAttribute("data-codigo"));
 	var estruturaHTML = "";
@@ -390,3 +392,17 @@ function salvaConfiguracao() {
 	localStorage.setItem("modoEdicao", modoEdicaoField.value);
 	localStorage.setItem("exibirLinha", exibirLinhaField.value);
 }
+
+
+//*
+//Inicializa o Service Worker para tornar o site um PWA (Aplicação para celular)
+if ("serviceWorker" in navigator) {
+	navigator.serviceWorker
+		.register("service-worker.js", {
+			scope: "./"
+		})
+		.then(function(reg) {
+			console.log("O Service Worker foi registrado para o escopo: " + reg.scope);
+		});
+}
+/**/
